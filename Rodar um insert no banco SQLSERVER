@@ -1,0 +1,31 @@
+## Rodar um insert no banco SQLSERVER
+
+# Rodar um insert no banco SQLSERVER
+import pymssql as sql
+
+conexao = sql.connect(
+    server='PSQL06_01',
+    port=1456,
+    user='',
+    password='',
+    database='Prev_Perdas')
+
+cursor = conexao.cursor()
+
+inicio = time.time()
+
+query = "INSERT INTO vendas_p2k_inserir (CENTRO, DATA, MATERIAL, TMV, QUANTIDADE) VALUES (%s, %s, %s, %s, %s)" 
+batch_size = 1000
+for i in range(0, len(vendas_p2k), batch_size):
+    batch = vendas_p2k[i:i+batch_size]
+    values = [(row['CENTRO'], row['DATA'], row['MATERIAL'], row['TMV'], row['QUANTIDADE']) for _, row in batch.iterrows()]
+    cursor.executemany(query, values)
+    conexao.commit()
+
+fim = time.time()
+
+cursor.close()
+conexao.close()
+
+print('Dados Inseridos')
+print(f'tempo percorrido: {int(fim-inicio)}')
